@@ -1,0 +1,253 @@
+{
+  "entities": {
+    "Folder": {
+      "title": "Folder",
+      "description": "Organizational folder grouping boards together",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique folder identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Folder display name",
+          "maxLength": 100
+        },
+        "color": {
+          "type": "string",
+          "description": "Paper color theme for folder",
+          "maxLength": 30
+        },
+        "order": {
+          "type": "number",
+          "description": "Sorting order index"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase UID of folder owner"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or server timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp or server timestamp"
+        }
+      },
+      "required": ["id", "name", "ownerId", "order"]
+    },
+    "Board": {
+      "title": "Board",
+      "description": "A workspace board holding idea notes",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique board identifier"
+        },
+        "folderId": {
+          "type": "string",
+          "description": "Parent folder ID or empty/root",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Board title",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional board memo or description",
+          "maxLength": 500
+        },
+        "paperTheme": {
+          "type": "string",
+          "description": "Paper aesthetic theme e.g. craft, parchment, newsprint, charred",
+          "maxLength": 40
+        },
+        "order": {
+          "type": "number",
+          "description": "Display order"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase UID of owner"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["id", "folderId", "name", "ownerId", "order"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Encrypted idea note card on a board",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique note identifier"
+        },
+        "boardId": {
+          "type": "string",
+          "description": "Parent board identifier",
+          "maxLength": 128
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase UID of owner"
+        },
+        "isEncrypted": {
+          "type": "boolean",
+          "description": "Whether note payload is encrypted with user key"
+        },
+        "encryptedPayload": {
+          "type": "string",
+          "description": "AES-GCM encrypted cipher string containing note title, body, and image attachments",
+          "maxLength": 1000000
+        },
+        "color": {
+          "type": "string",
+          "description": "Tactile paper card shade",
+          "maxLength": 40
+        },
+        "isPinned": {
+          "type": "boolean",
+          "description": "Whether note is pinned to top of board"
+        },
+        "order": {
+          "type": "number",
+          "description": "Order position on board"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of modification"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of creation"
+        }
+      },
+      "required": ["id", "boardId", "ownerId", "encryptedPayload", "isEncrypted"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Optional character onboarding and referral profile",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User UID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional user preferred name",
+          "maxLength": 100
+        },
+        "characterExplanation": {
+          "type": "string",
+          "description": "Explanation of user character / creative persona",
+          "maxLength": 500
+        },
+        "referralSource": {
+          "type": "string",
+          "description": "Source where user heard about us (YouTube, WhatsApp, Twitter, Instagram, etc.)",
+          "maxLength": 100
+        },
+        "hasCompletedOnboarding": {
+          "type": "boolean",
+          "description": "Whether onboarding questionnaire was completed or dismissed"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Update timestamp"
+        }
+      },
+      "required": ["userId", "hasCompletedOnboarding"]
+    },
+    "UserFeedbackUpdate": {
+      "title": "UserFeedbackUpdate",
+      "description": "User improvement suggestions and changelog feedback lifecycle entry",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique suggestion ID"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "User who submitted the update request"
+        },
+        "authorName": {
+          "type": "string",
+          "description": "Display name or email snippet",
+          "maxLength": 100
+        },
+        "title": {
+          "type": "string",
+          "description": "Feature improvement title",
+          "maxLength": 150
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed improvement explanation",
+          "maxLength": 1000
+        },
+        "category": {
+          "type": "string",
+          "description": "Feature category e.g. encryption, boards, styling, folders",
+          "maxLength": 50
+        },
+        "status": {
+          "type": "string",
+          "description": "Lifecycle status e.g. submitted, under-review, planned, shipped",
+          "maxLength": 50
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Submission timestamp"
+        }
+      },
+      "required": ["id", "ownerId", "title", "description", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/folders/{folderId}": {
+      "schema": {
+        "$ref": "Folder"
+      },
+      "description": "User folders for categorizing boards"
+    },
+    "/users/{userId}/boards/{boardId}": {
+      "schema": {
+        "$ref": "Board"
+      },
+      "description": "User boards for ideas"
+    },
+    "/users/{userId}/notes/{noteId}": {
+      "schema": {
+        "$ref": "Note"
+      },
+      "description": "End-to-end encrypted notes belonging to the user"
+    },
+    "/users/{userId}/profile/{profileId}": {
+      "schema": {
+        "$ref": "UserProfile"
+      },
+      "description": "User profile with optional character description and referral source"
+    },
+    "/feedbackUpdates/{updateId}": {
+      "schema": {
+        "$ref": "UserFeedbackUpdate"
+      },
+      "description": "Community user suggested updates and improvement transparent lifecycle"
+    }
+  }
+}

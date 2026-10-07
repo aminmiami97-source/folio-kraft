@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --paper-bg: #F7F3EA;
+    --paper-card: #FCFAF6;
+    --paper-border: #E3D9C6;
+    --paper-ink: #2B2621;
+    --paper-muted: #7E7365;
+    --paper-accent: #8E4A35; /* terracotta sealing wax */
+  }
+
+  .dark {
+    --paper-bg: #141210;
+    --paper-card: #1D1A16;
+    --paper-border: #332D26;
+    --paper-ink: #EAE4D8;
+    --paper-muted: #A3998C;
+    --paper-accent: #D97E59;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--paper-bg);
+    color: var(--paper-ink);
+    min-height: 100vh;
+  }
+}
+
+/* Paper aesthetic utilities */
+.font-serif-paper {
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+
+.font-display-paper {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+
+.font-mono-paper {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Notebook ruled line pattern */
+.bg-ruled-paper {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(180, 160, 140, 0.22) 28px
+  );
+}
+
+.dark .bg-ruled-paper {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(85, 75, 65, 0.35) 28px
+  );
+}
+
+/* Paper pin and tape effects */
+.paper-pin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #D4AF37, #8B6508 80%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.paper-tape {
+  background: rgba(235, 222, 195, 0.7);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  backdrop-filter: blur(1px);
+}
+
+.dark .paper-tape {
+  background: rgba(70, 62, 52, 0.75);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(140, 120, 100, 0.25);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 120, 100, 0.45);
+}

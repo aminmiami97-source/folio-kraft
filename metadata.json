@@ -1,0 +1,6 @@
+{
+  "name": "Folio Kraft — Paper Boards & Encrypted Notes",
+  "description": "Minimalist tactile paper-style boards and note organization with end-to-end encryption, multi-device cloud synchronization, Google sign-in, and transparent user changelog.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

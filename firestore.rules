@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /folders/{folderId} {
+        function isValidFolder(data) {
+          return data.id is string && data.id.size() <= 128
+            && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+            && data.ownerId == userId
+            && data.order is number;
+        }
+
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(folderId) && isValidFolder(incoming());
+        allow update: if isOwner(userId) && isValidId(folderId) && isValidFolder(incoming());
+        allow delete: if isOwner(userId) && isValidId(folderId);
+      }
+
+      match /boards/{boardId} {
+        function isValidBoard(data) {
+          return data.id is string && data.id.size() <= 128
+            && data.folderId is string && data.folderId.size() <= 128
+            && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+            && data.ownerId == userId
+            && data.order is number;
+        }
+
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(boardId) && isValidBoard(incoming());
+        allow update: if isOwner(userId) && isValidId(boardId) && isValidBoard(incoming());
+        allow delete: if isOwner(userId) && isValidId(boardId);
+      }
+
+      match /notes/{noteId} {
+        function isValidNote(data) {
+          return data.id is string && data.id.size() <= 128
+            && data.boardId is string && data.boardId.size() <= 128
+            && data.ownerId == userId
+            && data.isEncrypted is bool
+            && data.encryptedPayload is string && data.encryptedPayload.size() <= 1000000;
+        }
+
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(noteId) && isValidNote(incoming());
+        allow update: if isOwner(userId) && isValidId(noteId) && isValidNote(incoming());
+        allow delete: if isOwner(userId) && isValidId(noteId);
+      }
+
+      match /profile/{profileId} {
+        function isValidProfile(data) {
+          return data.userId == userId
+            && data.hasCompletedOnboarding is bool;
+        }
+
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(profileId) && isValidProfile(incoming());
+        allow update: if isOwner(userId) && isValidId(profileId) && isValidProfile(incoming());
+        allow delete: if isOwner(userId) && isValidId(profileId);
+      }
+    }
+
+    match /feedbackUpdates/{updateId} {
+      function isValidFeedback(data) {
+        return data.id is string && data.id.size() <= 128
+          && data.ownerId == request.auth.uid
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 150
+          && data.description is string && data.description.size() > 0 && data.description.size() <= 1000
+          && data.status is string && data.status.size() <= 50;
+      }
+
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(updateId) && isValidFeedback(incoming());
+      allow update: if isSignedIn() && isValidId(updateId) && existing().ownerId == request.auth.uid && isValidFeedback(incoming());
+      allow delete: if isSignedIn() && isValidId(updateId) && existing().ownerId == request.auth.uid;
+    }
+  }
+}
